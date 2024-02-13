@@ -1,0 +1,72 @@
+<!-- <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 채팅</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="messages" th:each="message : ${messages}">
+            <span th:text="${message.sender + ': ' + message.content}"></span>
+        </div>
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요...">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+
+    <script src="/js/sockjs.min.js"></script>
+    <script src="/js/stomp.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html> -->
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+</head>
+<body>
+
+<div id="chat">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+const socket = new WebSocket('ws://localhost:8080/chat/{세션 ID}/websocket');
+
+socket.onmessage = function(event) {
+    const message = JSON.parse(event.data);
+    displayMessage(message.content, message.sender);
+};
+
+function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value;
+    const sender = 'You'; // Set the sender's name or ID as needed
+    const newMessage = { content: message, sender: sender };
+    
+    // Send the message to the server
+    socket.send(JSON.stringify(newMessage));
+
+    // Display the sent message on the client
+    displayMessage(message, sender);
+
+    // Clear the input field
+    messageInput.value = '';
+}
+
+function displayMessage(content, sender) {
+    const messagesDiv = document.getElementById('messages');
+    const messageElement = document.createElement('div');
+    messageElement.innerHTML = `<strong>${sender}:</strong> ${content}`;
+    messagesDiv.appendChild(messageElement);
+}
+</script>
+
+</body>
+</html>
